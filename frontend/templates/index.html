@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body">
+    <div class="text-muted small">Total seats</div><div class="display-6">{{ stats.total }}</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body">
+    <div class="text-muted small">In use this hour</div><div class="display-6">{{ stats.in_use }}</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body">
+    <div class="text-muted small">Free now</div><div class="display-6 text-success">{{ stats.free }}</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card stat-card"><div class="card-body">
+    <div class="text-muted small">Occupancy now</div><div class="display-6">{{ stats.pct }}%</div></div></div></div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+      <div>
+        <h5 class="mb-0">🤖 AI occupancy forecast</h5>
+        <small class="text-muted">Predicted crowd level per hour (Random Forest model)</small>
+      </div>
+      <input type="date" id="forecast-date" class="form-control w-auto" value="{{ today }}" min="{{ today }}">
+    </div>
+    <div id="forecast-tip" class="alert alert-info py-2 d-none"></div>
+    <canvas id="forecastChart" height="110"></canvas>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/forecast.js') }}"></script>
+{% endblock %}

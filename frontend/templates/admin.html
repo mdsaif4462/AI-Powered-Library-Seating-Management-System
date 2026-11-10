@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Admin{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="mb-0">Admin dashboard</h4>
+  <form method="post" action="{{ url_for('retrain') }}">
+    <button class="btn btn-dark btn-sm">🔁 Retrain AI models</button></form>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Students</div><div class="display-6">{{ stats.students }}</div></div></div></div>
+  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted small">Bookings today</div><div class="display-6">{{ stats.today_bookings }}</div></div></div></div>
+  <div class="col-md-4"><div class="card stat-card"><div class="card-body"><div class="text-muted small">No-show rate (30 days)</div><div class="display-6">{{ stats.noshow_rate }}%</div></div></div></div>
+</div>
+
+<div class="card shadow-sm mb-4"><div class="card-body">
+  <h5>⚠️ Upcoming bookings likely to be no-shows</h5>
+  <div class="table-responsive"><table class="table table-sm align-middle mb-0">
+    <thead><tr><th>Student</th><th>Date</th><th>Time</th><th>Seat</th><th>Risk</th></tr></thead>
+    <tbody>
+    {% for r in risky %}
+      <tr><td>{{ r.name }}</td><td>{{ r.booking_date.strftime('%d %b') }}</td>
+          <td>{{ '%02d:00' % r.start_hour }}–{{ '%02d:00' % r.end_hour }}</td><td>{{ r.seat_code }}</td>
+          <td><div class="progress" style="height:18px;min-width:90px">
+            <div class="progress-bar {{ 'bg-danger' if r.no_show_risk >= 0.5 else 'bg-warning' }}"
+                 style="width: {{ (r.no_show_risk * 100)|round|int }}%">{{ (r.no_show_risk * 100)|round|int }}%</div></div></td></tr>
+    {% else %}<tr><td colspan="5" class="text-muted text-center">No high-risk bookings.</td></tr>{% endfor %}
+    </tbody></table></div>
+</div></div>
+
+<div class="card shadow-sm"><div class="card-body">
+  <h5>Seats</h5>
+  <div class="table-responsive"><table class="table table-sm align-middle mb-0">
+    <thead><tr><th>Code</th><th>Zone</th><th>Features</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for s in seats %}
+      <tr><td>{{ s.seat_code }}</td><td>{{ s.zone }}</td>
+          <td>{% if s.has_power %}⚡{% endif %} {% if s.near_window %}🪟{% endif %} {% if s.is_quiet %}🤫{% endif %}</td>
+          <td><span class="badge text-bg-{{ 'success' if s.status == 'active' else 'warning' }}">{{ s.status }}</span></td>
+          <td class="text-end"><form method="post" action="{{ url_for('toggle_seat', seat_id=s.id) }}">
+            <button class="btn btn-sm btn-outline-secondary">{{ 'Set maintenance' if s.status == 'active' else 'Activate' }}</button></form></td></tr>
+    {% endfor %}
+    </tbody></table></div>
+</div></div>
+{% endblock %}

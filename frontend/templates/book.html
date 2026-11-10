@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Book a seat{% endblock %}
+{% block content %}
+<div class="card shadow-sm mb-3"><div class="card-body">
+  <form id="slot-form" class="row g-3 align-items-end">
+    <div class="col-md-3"><label class="form-label">Date</label>
+      <input type="date" id="date" class="form-control" value="{{ today }}" min="{{ today }}" required></div>
+    <div class="col-6 col-md-2"><label class="form-label">Start</label>
+      <select id="start" class="form-select">
+        {% for h in range(cfg.OPEN_HOUR, cfg.CLOSE_HOUR) %}<option value="{{ h }}">{{ '%02d:00' % h }}</option>{% endfor %}
+      </select></div>
+    <div class="col-6 col-md-2"><label class="form-label">Hours</label>
+      <select id="duration" class="form-select">
+        {% for h in range(1, cfg.MAX_DURATION + 1) %}<option value="{{ h }}">{{ h }}</option>{% endfor %}
+      </select></div>
+    <div class="col-md-3">
+      <label class="form-label d-block">AI preferences</label>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="pref-power"><label class="form-check-label" for="pref-power">⚡ Power</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="pref-window"><label class="form-check-label" for="pref-window">🪟 Window</label></div>
+      <div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" id="pref-quiet"><label class="form-check-label" for="pref-quiet">🤫 Quiet</label></div>
+    </div>
+    <div class="col-md-2"><button class="btn btn-primary w-100">Find seats</button></div>
+  </form>
+</div></div>
+
+<div id="msg"></div>
+
+<div class="card shadow-sm"><div class="card-body">
+  <div class="d-flex flex-wrap gap-3 small mb-3">
+    <span><span class="seat-key seat-available"></span> Available</span>
+    <span><span class="seat-key seat-recommended"></span> AI recommended</span>
+    <span><span class="seat-key seat-taken"></span> Taken / maintenance</span>
+    <span><span class="seat-key seat-selected"></span> Selected</span>
+  </div>
+  <div id="seat-map" class="text-muted">Choose a time and press “Find seats”.</div>
+</div></div>
+
+<div id="confirm-bar" class="confirm-bar d-none">
+  <div class="container d-flex justify-content-between align-items-center">
+    <span id="confirm-text"></span>
+    <button id="confirm-btn" class="btn btn-success">Confirm booking</button>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/booking.js') }}"></script>{% endblock %}
